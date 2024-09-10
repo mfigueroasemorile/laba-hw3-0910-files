@@ -1,8 +1,12 @@
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+
 public class MenuConsole {
 
 
@@ -15,6 +19,7 @@ public class MenuConsole {
             System.out.println("--------- MENU ---------");
             System.out.println("1. Enter and write text");
             System.out.println("2. Read file");
+            System.out.println("0. Exit");
             System.out.print("Select an option: ");
             option = scanner.nextInt();
             scanner.nextLine();
@@ -33,6 +38,9 @@ public class MenuConsole {
                     break;
             }
         } while (option != Constants.EXIT);
+        countLettersInFile(new File("output.txt"));
+        uniqueWords(new File("output.txt"));
+
 
     }
 
@@ -57,5 +65,49 @@ public class MenuConsole {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void countLettersInFile(File file){
+
+        try {
+            String fileContent = FileUtils.readFileToString(file,"UTF-8");
+            String cleanText = StringUtils.remove(fileContent, ' ');
+            cleanText = StringUtils.remove(cleanText, '\n');
+            int letters = cleanText.length();
+            System.out.println("The file contains " + letters + " letters");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void uniqueWords(File file) {
+
+        try {
+            String fileContent = FileUtils.readFileToString(file, "UTF-8");
+            String[] wordsArray = StringUtils.split(fileContent);
+            for (int i = 0; i<wordsArray.length; i++){
+                wordsArray[i] = StringUtils.lowerCase(wordsArray[i]);
+            }
+
+            Map<String, Integer> wordCountMap = new HashMap<>();
+            for (String word : wordsArray) {
+                if (wordCountMap.containsKey(word)) {
+                    wordCountMap.put(word, wordCountMap.get(word) + 1);
+                } else {
+                    wordCountMap.put(word, 1);
+                }
+            }
+            int counter = 0;
+            for (Map.Entry<String, Integer> entry : wordCountMap.entrySet()) {
+                if (entry.getValue() == 1) {
+                    counter++;
+                }
+            }
+
+            System.out.println("There are " + counter + " unique words in the file.");
+        } catch (IOException e) {
+
+        }
+
     }
 }
