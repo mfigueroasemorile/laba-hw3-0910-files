@@ -130,9 +130,9 @@ public class MenuConsole {
                         wordCounter ++;
                     }
                 }
-                System.out.println("The word " + word +" appears " + wordCounter +" in the file");
+                System.out.println("The word " + word +" appears " + wordCounter +" times in the file");
             } else {
-                throw new InvalidWordException("Invalid word. it should have at leaset 2 letters");
+                throw new InvalidWordException("Invalid word. it should have at least 2 letters");
             }
 
         } catch (IOException e) {
