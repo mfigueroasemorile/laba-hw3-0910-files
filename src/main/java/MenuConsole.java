@@ -1,9 +1,11 @@
+import exception.InvalidWordException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -16,27 +18,33 @@ public class MenuConsole {
         int option;
         Scanner scanner = new Scanner(System.in);
         do {
-            System.out.println("--------- MENU ---------");
-            System.out.println("1. Enter and write text");
-            System.out.println("2. Read file");
-            System.out.println("0. Exit");
-            System.out.print("Select an option: ");
-            option = scanner.nextInt();
-            scanner.nextLine();
-            switch (option) {
-                case Constants.ENTER_TEXT:
-                    System.out.print("Insert your text: ");
-                    String input = scanner.nextLine();
-                    writeFile(input);
-                    break;
-                case Constants.READ_FILE:
-                    System.out.println("Insert path of file to read: ");
-                    String path = scanner.next();
-                    readFile(path);
-                    break;
-                case Constants.EXIT:
-                    break;
-            }
+                System.out.println("--------- MENU ---------");
+                System.out.println("1. Enter and write text");
+                System.out.println("2. Read file");
+                System.out.println("3. Search word in file");
+                System.out.println("0. Exit");
+                System.out.print("Select an option: ");
+                option = scanner.nextInt();
+                scanner.nextLine();
+                switch (option) {
+                    case Constants.ENTER_TEXT:
+                        System.out.print("Insert your text: ");
+                        String input = scanner.nextLine();
+                        writeFile(input);
+                        break;
+                    case Constants.READ_FILE:
+                        System.out.println("Insert path of file to read: ");
+                        String path = scanner.next();
+                        readFile(path);
+                        break;
+                    case Constants.SEARCH_WORD:
+                        System.out.println("Insert word to search in the file: ");
+                        String wordToSearch = scanner.next();
+                        searchWordInFile(new File("output.txt"), wordToSearch);
+                        break;
+                    case Constants.EXIT:
+                        break;
+                }
         } while (option != Constants.EXIT);
         countLettersInFile(new File("output.txt"));
         uniqueWords(new File("output.txt"));
@@ -107,6 +115,30 @@ public class MenuConsole {
             System.out.println("There are " + counter + " unique words in the file.");
         } catch (IOException e) {
 
+        }
+
+    }
+
+    private void searchWordInFile(File file, String word) {
+        try{
+            if(word.length() > 1){
+                String fileContent = FileUtils.readFileToString(file, "UTF-8");
+                String[] wordsArray = StringUtils.split(fileContent);
+                int wordCounter = 0;
+                for (String w : wordsArray){
+                    if(w.equals(word)){
+                        wordCounter ++;
+                    }
+                }
+                System.out.println("The word " + word +" appears " + wordCounter +" in the file");
+            } else {
+                throw new InvalidWordException("Invalid word. it should have at leaset 2 letters");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InvalidWordException e) {
+            System.out.println(e.getMessage());
         }
 
     }
