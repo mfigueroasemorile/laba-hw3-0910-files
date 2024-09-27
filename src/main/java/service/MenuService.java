@@ -8,6 +8,10 @@ import threads.WordsCounterThread;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static java.lang.Thread.sleep;
 
 public class MenuService {
 
@@ -15,29 +19,52 @@ public class MenuService {
     private ConnectionPool connectionPool;
 
     public MenuService(){
-        String[] filePath = {"output.txt",
-                             "output.txt",
-                             "output.txt",
-                             "output.txt",
-                             "output.txt"};
-        connectionPool = ConnectionPool.getInstance(filePath, 5);
+
     }
     public void writeFile (String input){
+        String[] filePath = {"output1.txt",
+                "output2.txt",
+                "output3.txt",
+                "output4.txt",
+                "output5.txt"};
 
-        File file = connectionPool.getConnection();
+        connectionPool = ConnectionPool.getInstance(filePath, 5); //pool 5 conec
+        ExecutorService executor = Executors.newFixedThreadPool(7);//7 threads
 
-        if (file != null){
-            try{
-                FileUtils.writeStringToFile(file, input + System.lineSeparator(), "UTF-8", true);
-                System.out.println("File written");
-                connectionPool.getConnectionBack(file);
-            } catch (IOException e){
-                System.out.println("Error during file writing");
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("There are no connections available");
+        for (int i = 0; i<=7; i++){
+            int threadId = i;
+            executor.submit(() -> {
+                try {
+                    System.out.println("Thread " + threadId + " attempting to get a connection...");
+                    File connection = connectionPool.getConnection(); //get connec
+
+                    sleep(15000); // see the execution
+
+                    connectionPool.getConnectionBack(connection); //conec back to available list
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
         }
+        /*try{
+
+            File file = connectionPool.getConnection();
+            if (file != null){
+                try{
+                    FileUtils.writeStringToFile(file, input + System.lineSeparator(), "UTF-8", true);
+                    System.out.println("File written");
+                    connectionPool.getConnectionBack(file);
+                } catch (IOException e){
+                    System.out.println("Error during file writing");
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("There are no connections available");
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }*/
+
     }
 
 

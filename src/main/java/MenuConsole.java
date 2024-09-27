@@ -34,13 +34,13 @@ public class MenuConsole {
                     case Constants.SEARCH_WORD:
                         System.out.println("Insert word to search in the file: ");
                         String wordToSearch = scanner.next();
-                        service.searchWordInFile(new File("output.txt"), wordToSearch);
+                        service.searchWordInFile(new File("output1.txt"), wordToSearch);
                         break;
                     case Constants.EXIT:
                         break;
                 }
         } while (option != Constants.EXIT);
-        service.countLettersInFile(new File("output.txt"));
-        service.uniqueWords(new File("output.txt"));
+        service.countLettersInFile(new File("output1.txt"));
+        service.uniqueWords(new File("output1.txt"));
     }
 }
