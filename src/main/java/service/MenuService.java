@@ -42,10 +42,10 @@ public class MenuService {
 
                     if(file != null){
                         try{
-                            System.out.println("Thread"+ threadId + "writing now");
+                            System.out.println("Thread "+ threadId + " is able to write");
                             FileUtils.writeStringToFile(file, input + System.lineSeparator(), "UTF-8", true);
-                            System.out.println("Writing file");
-                            //Thread.sleep(8000);
+                            System.out.println("Thread "+ threadId + " is writing file");
+                            Thread.sleep(8000);
                             System.out.println("File written by thread " + threadId);
                             connectionPool.getConnectionBack(file);
                         } catch (IOException e) {
