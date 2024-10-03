@@ -8,9 +8,9 @@ import threads.WordsCounterThread;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
 
 import static java.lang.Thread.sleep;
 
@@ -33,10 +33,11 @@ public class MenuService {
         connectionPool = ConnectionPool.getInstance(filePath, 5); //pool 5 conec
         System.out.println("7 threads created");
         ExecutorService executor = Executors.newFixedThreadPool(7);//7 threads
+        List<Future<?>> futureList = new ArrayList<>();
 
-        for (int i = 0; i<=7; i++){
+        for (int i = 0; i<7; i++){
             int threadId = i;
-            executor.submit(() -> {
+            Future<?> future = executor.submit(() -> {
                 try {
                     File file = connectionPool.getConnection();
 
@@ -59,6 +60,16 @@ public class MenuService {
                     e.printStackTrace();
                 }
             });
+
+            futureList.add(future);
+        }
+
+        for (Future<?> future : futureList){
+            try {
+                future.get();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         executor.shutdown();
