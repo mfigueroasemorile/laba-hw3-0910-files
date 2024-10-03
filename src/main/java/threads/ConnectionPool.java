@@ -33,13 +33,13 @@ public class ConnectionPool {
     public synchronized File getConnection() throws InterruptedException {
         while (connectionPool.isEmpty()) {
             System.out.println("Waiting for an available connection...");
-            sleep(5000);
+            //sleep(5000);
             wait();
         }
         File connection = connectionPool.remove(0);
         connectionInUse.add(connection);
         System.out.println("Connections available: " + connectionPool.size() + ", connections in use: " + connectionInUse.size());
-        sleep(5000);
+        //sleep(2000);
 
         return connection;
     }
@@ -50,7 +50,7 @@ public class ConnectionPool {
                 connectionPool.add(connection);
                 System.out.println("Connection in use is back to the connecitonPool list");
                 System.out.println("Connections available : " + connectionPool.size() + ", connections in use: " + connectionInUse.size());
-                sleep(5000);
+                //sleep(2000);
                 notifyAll();
             } else {
                 System.out.println("This connection was not in use");

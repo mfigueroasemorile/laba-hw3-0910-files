@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
@@ -28,42 +29,44 @@ public class MenuService {
                 "output4.txt",
                 "output5.txt"};
 
+        System.out.println("5 connections created");
         connectionPool = ConnectionPool.getInstance(filePath, 5); //pool 5 conec
+        System.out.println("7 threads created");
         ExecutorService executor = Executors.newFixedThreadPool(7);//7 threads
 
         for (int i = 0; i<=7; i++){
             int threadId = i;
             executor.submit(() -> {
                 try {
-                    System.out.println("Thread " + threadId + " attempting to get a connection...");
-                    File connection = connectionPool.getConnection(); //get connec
+                    File file = connectionPool.getConnection();
 
-                    sleep(15000); // see the execution
-
-                    connectionPool.getConnectionBack(connection); //conec back to available list
-                } catch (InterruptedException e) {
+                    if(file != null){
+                        try{
+                            System.out.println("Thread"+ threadId + "writing now");
+                            FileUtils.writeStringToFile(file, input + System.lineSeparator(), "UTF-8", true);
+                            System.out.println("Writing file");
+                            //Thread.sleep(8000);
+                            System.out.println("File written by thread " + threadId);
+                            connectionPool.getConnectionBack(file);
+                        } catch (IOException e) {
+                            System.out.println("Input error, try again");
+                            System.out.println(e.getMessage());
+                        }
+                    } else {
+                        System.out.println("There ar no connections available");
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
         }
-        /*try{
 
-            File file = connectionPool.getConnection();
-            if (file != null){
-                try{
-                    FileUtils.writeStringToFile(file, input + System.lineSeparator(), "UTF-8", true);
-                    System.out.println("File written");
-                    connectionPool.getConnectionBack(file);
-                } catch (IOException e){
-                    System.out.println("Error during file writing");
-                    e.printStackTrace();
-                }
-            } else {
-                System.out.println("There are no connections available");
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }*/
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS); // Esperar a que todos los hilos terminen
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
